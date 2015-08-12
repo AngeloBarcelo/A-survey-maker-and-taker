@@ -5,6 +5,11 @@ import java.util.Scanner;
  * questions and people taking the survey. Then hands the survey off to the 
  * people taking the survey. The results are provided in grid form and allows 
  * the user to review the answers provided for a particular question.
+ * 
+ * If you want to change the high limits of anything in the program you only 
+ * have to change one or all of the first three variables. What is displayed 
+ * to the user, counters, and validation limites are all based on these three
+ * variables.
  */
 
 /*
@@ -15,69 +20,113 @@ import java.util.Scanner;
  */
 public class Survey
 {
-    private static int highestResponsePossable = 5;//added to make program flexable in future and easier to adjust
-    private static int questionNumber = 10;//declaring variable for the number of questions
-    private static int numberOfRespondents = 10;//declaring variable for the number of respondents
-    private static int respondentsId = 0;//declaring variable for the respondents ID
-    private String surveyTitle;//declaring variable for the survey title
-    private String [] questionArray = new String [questionNumber];//declaring the array to hold the questions
-    private int [][] responseArray = new int [questionNumber][numberOfRespondents];//declaring the array to hold the answers to the questions
+    //declares the variable that sets the highest response possible to answer questions
+    private static int highestResponsePossible = 5;
     
-    //Asks the user how many questions and asks them to enter them
+    //declares the variable that sets the highest number of questions to be entered
+    private static int higestNumbQuestionsAllowed = 10;
+    
+    //declares the variable that sets the highest number of people that can take the survey
+    private static int higestNumbRespondentsAllowed = 10;
+    private static int questionNumber = higestNumbQuestionsAllowed;
+    private static int numberOfRespondents = higestNumbRespondentsAllowed;
+    private static int respondentsId = 0;
+    private String surveyTitle;
+    private String [] questionArray = new String [questionNumber];
+    private int [][] responseArray = new int [questionNumber][numberOfRespondents];
     void enterQuestions()
     {
-        //Asks the user how many questions and then sets the variable questionNumber
-        System.out.print("How many questions would you like the survey to have?\n");
+        questionNumber =0;
+        
+        do 
+        {
+            //Asks the user how many questions and then sets the variable questionNumber
+            System.out.println("\nHow many questions would you like the survey to have?");
+            System.out.println("Please enter a number between 1-"+higestNumbQuestionsAllowed );
        
-        Scanner howManyQuestions = new Scanner (System.in);
-        questionNumber = howManyQuestions.nextInt();    
+            Scanner howManyQuestions = new Scanner (System.in);
+        
+            questionNumber = howManyQuestions.nextInt(); 
+        
+            if (questionNumber <1)
+            {
+                //The message to show if the user enters anything less than 1
+                System.out.println("\nI think you should ask at least one question");
+            }
+        
+            if (questionNumber >higestNumbQuestionsAllowed)
+            {
+                //The message to show if the user enters anything higher than allowed
+                System.out.println("\nI'm sorry there can't be more than " + higestNumbQuestionsAllowed);
+            }
+        }
+        
+        while (questionNumber < 1 || questionNumber > higestNumbQuestionsAllowed);
+        
+        //Shows the user what is expected of them when entering the questions
+        System.out.println("\nThe next part is going to ask you to enter your questions"); 
+        System.out.println("When writing your question keep in mind that the " +
+                           "survey takers can only respond with numbers on a "
+                           + "scale of 1 -" + highestResponsePossible + "\n" );
         
         /* Allows the user to enter the questions to be asked later and also 
          * displays the question number they are entering. It will only allow as 
          * many question to be entered as prev. entered */
         for (int counter =0; counter < questionNumber; counter ++)
         {
-            System.out.print("Please enter question #" +(counter+1)+"\n");
-            //Stores the qustions entered in the question array
-            questionArray[counter] = howManyQuestions.next();
+            System.out.println("Please enter question #" +(counter+1));
+
+            Scanner wholeLineOfText = new Scanner (System.in);
+            
+            String enteredQuestion = wholeLineOfText.nextLine();
+            
+            questionArray[counter] = enteredQuestion;   
         }
         
-        System.out.println("And how many people will be taking the survey?");
-        
+        //Sets the variable numberOfRespondents for the validation loop
         numberOfRespondents=0;
         
         //Validates what the user is entering and sets the variable numberOfRespondents
-        while (numberOfRespondents <1 ||numberOfRespondents > questionNumber)
+        do 
         {
-            System.out.println("(There as to be at least one and no more than 10 please)");
+            System.out.println("\nAnd how many people will be taking the survey?");
         
             Scanner respondents = new Scanner (System.in);
         
-        numberOfRespondents = respondents.nextInt(); 
+            numberOfRespondents = respondents.nextInt(); 
+        
+            if (numberOfRespondents < 1)
+            {
+                //Shows this message if the user enters something less than 1
+                System.out.println("I'm sorry there has to be at least one person you want to take the survey");
+            }
+            if (numberOfRespondents > higestNumbRespondentsAllowed)
+            {
+                //Shows this message if the user enters something higher than allowed
+                System.out.println("I'm sorry there can't be more than " + higestNumbRespondentsAllowed);
+            }
         }
+        
+        while (numberOfRespondents <1 ||numberOfRespondents > questionNumber);
     }
-    
     //Sets the survey title to the default title if none is provided
     Survey()
     {
         this("Customer Survey");
     }
     
-    //Sets the survey title to what was provided
     Survey (String surveyTitle)
     {
         respondentsId = 0;
         this.surveyTitle = surveyTitle; 
     }
     
-    //Creates/collects the respondents ID
     int generateRespondentsId ()
     {
         respondentsId = (respondentsId +1);
         return respondentsId;     
     }
     
-    //Gets the survey title to put in the survey method
     String getSurveyTitle()
     {
         return surveyTitle; 
@@ -85,23 +134,37 @@ public class Survey
     
     //displays all of the surveys results in a grid
     void displaySurveyResults()
-    {
-        System.out.print(surveyTitle +"\n");
-    
+    {   
+        //Shows the user what is going to be printed out
+        System.out.print("All of the results provided by the survey takers for ");
+        System.out.println(surveyTitle +" are: ");
+        
+        //Loop to print out the colum headers for the grid
         for (int respondent =0; respondent < numberOfRespondents; respondent ++)
-        {      
-            for (int question =0; question< questionNumber; question ++)
-            {   
-                System.out.print(responseArray[respondent][question]);
-            }
+        {    
+            System.out.printf("\t%2s", "Resp"); 
+            System.out.print(respondent+1); 
+        }
+        
+        System.out.println();
+        
+        //Displays the actual results entered for the survey
+        for (int question =0; question < questionNumber; question ++)
+        {  
+            System.out.print("Q# " +(question+1) +": " );
             
-            System.out.println();
+            for (int respondent =0; respondent< numberOfRespondents; respondent ++)
+            {   
+                System.out.printf("\t%3d", responseArray [question][respondent]);
+            }
+        System.out.println();
         }    
     } 
     
     //Allows the user to selct a qustion and view all the answers provided for it
     void displayQuestionStats(int entered)
-    {    
+    {   
+        //Validation loop to make sure the # is at lest 1 and no more than the # of questions
         while (entered < 1 ||entered > questionNumber)
         {
             System.out.println("What question would you like to review the results for?");
@@ -124,11 +187,14 @@ public class Survey
         
         System.out.println(questionArray [numberOfQuestions-1]);
     }
-    
-    //Show the user the questions to be answered in overloaded presentQuestion method    
+      
     void presentQuestion(int numberOfQuestions, int respondentsId)
     {
-        System.out.println ("Survey taker #" + (respondentsId) + ". Quesion #" +(numberOfQuestions+1)+ " of "+ questionNumber + " is:");
+        System.out.println ("\nSurvey taker #" + (respondentsId) + 
+                ", on a scale to 1 - "+ highestResponsePossible +
+                ". With 1 being the lowest rating and " +highestResponsePossible +
+                " being the highest rating ");
+        System.out.print("Quesion #" +(numberOfQuestions+1)+ " of "+ questionNumber + " is: ");
         
         System.out.println(questionArray [numberOfQuestions]);
     }
@@ -136,25 +202,35 @@ public class Survey
     //Stores the users responses to the questions
     void logResponse (int question, int respondentsId, int response)
     {
+        //Validates the # being entered is at leas t 1 and no more than the highestResponsePossable
         do
         {
-            System.out.println("Please enter numbered response 1- " + highestResponsePossable);
+            System.out.println("Please enter a number between 1- " + highestResponsePossible);
             Scanner rating = new Scanner(System.in);
             response = rating.nextInt();
+            
+            if (response<1)
+                    {
+                    System.out.println("I'm sorry could you enter a higher number please"
+                                     + " Preferabley something between 1-5");
+                    }
+            if (response>  highestResponsePossible)
+                    {
+                    System.out.println("I'm sorry could you enter a lower number please"
+                                     + " Preferabley something between 1-5");
+                    }
         }
         
-        while (response < 1|| response > highestResponsePossable);
+        while (response < 1|| response > highestResponsePossible);
         
         responseArray[(question)][(respondentsId-1)]= response;
     }
     
-    //Getter for the numberOfQuestions for reuse in test class
     int numberOfQuestionsGet()
     { 
         return questionNumber;
     }
     
-    //Getter for the numberOfRespondents for reuse in test class
     int numberOfRespondentsGet()
     {
         return numberOfRespondents;
@@ -173,6 +249,7 @@ public class Survey
             {
                 total += responseArray[question][respondent];
             }
+            
             if (total>highestNumber)
             {
                 highestNumber=total;
