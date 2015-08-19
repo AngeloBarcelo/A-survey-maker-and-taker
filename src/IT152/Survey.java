@@ -14,8 +14,6 @@ import java.util.Scanner;
 
 /*
  * @author Angelo Barcelo 
- * IT152-1503A-01: Introduction to Java Programming II
- * Student ID: 19313797 
  * angelobarcelo@hotmail.com
  */
 public class Survey
